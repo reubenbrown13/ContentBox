@@ -11,6 +11,8 @@ component extends="baseHandler"{
 	* Pre handler
 	*/
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Media Manager";
 		// widget runnable event
 		prc.xehFileBrowser = "contentbox-filebrowser:home.index";
 	}

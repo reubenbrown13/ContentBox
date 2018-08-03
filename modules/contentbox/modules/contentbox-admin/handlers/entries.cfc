@@ -17,6 +17,8 @@ component extends="baseContentHandler"{
 
 	// pre handler
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Entries";
 		super.preHandler( argumentCollection=arguments );
 
 		// exit Handlers
@@ -196,14 +198,14 @@ component extends="baseContentHandler"{
 			rc.title = "Copy of #rc.title#";
 		}
 		// get a clone
-		var clone = entryService.new( { 
-			title 	= rc.title, 
+		var clone = entryService.new( {
+			title 	= rc.title,
 			slug 	= variables.HTMLHelper.slugify( rc.title ),
 			excerpt = original.getExcerpt()
 		} );
 
 		clone.setCreator( prc.oCurrentAuthor );
-		
+
 		// prepare for clone
 		clone.prepareForClone(
 			author				= prc.oCurrentAuthor,
@@ -216,7 +218,7 @@ component extends="baseContentHandler"{
 
 		// clone this sucker now!
 		entryService.saveEntry( clone );
-		
+
 		// relocate
 		cbMessageBox.info( "Entry Cloned, isn't that cool!" );
 		setNextEvent(event=prc.xehEntries);

@@ -25,6 +25,8 @@ component 	persistent="true"
 	property 	name="contentService"			inject="contentService@cb"			persistent="false";
 	property 	name="contentVersionService"	inject="contentVersionService@cb"	persistent="false";
 	property 	name="i18n" 					inject="i18n@cbi18n"				persistent="false";
+	property name="roleService"				inject="id:roleService@cb"				persistent="false";
+	property name="permissionService"				inject="id:permissionService@cb"				persistent="false";
 
 	/* *********************************************************************
 	**							NON PERSISTED PROPERTIES
@@ -188,6 +190,20 @@ component 	persistent="true"
 				fkcolumn="FK_authorID"
 				lazy="true"
 				fetch="join";
+
+	// M20 -> role loaded as a proxy and fetched immediately
+	property 	name="role"
+				fieldtype="many-to-one"
+				cfc="contentbox.models.security.Role"
+				fkcolumn="FK_roleID"
+				lazy="true";
+
+	// M20 -> permission loaded as a proxy and fetched immediately
+	property 	name="permission"
+				fieldtype="many-to-one"
+				cfc="contentbox.models.security.Permission"
+				fkcolumn="FK_permissionID"
+				lazy="true";
 
 	// O2M -> Comments
 	property 	name="comments"
@@ -654,6 +670,8 @@ component 	persistent="true"
 	struct function getResponseMemento(
 		required array slugCache=[],
 		boolean showAuthor=true,
+		boolean showRole=true,
+		boolean showPermission=true,
 		boolean showComments=true,
 		boolean showCustomFields=true,
 		boolean showParent=true,
@@ -775,6 +793,8 @@ component 	persistent="true"
 	* @slugCache Cache of slugs to prevent infinite recursions
 	* @counter
 	* @showAuthor Show author in memento or not
+	* @showRole Show role in memento or not
+	* @showPermission Show permission in memento or not
 	* @showComments Show comments in memento or not
 	* @showCustomFields Show comments in memento or not
 	* @showContentVersions Show content versions in memento or not
@@ -791,6 +811,8 @@ component 	persistent="true"
 		required array slugCache=[],
 		counter=0,
 		boolean showAuthor=true,
+		boolean showRole=true,
+		boolean showPermission=true,
 		boolean showComments=true,
 		boolean showCustomFields=true,
 		boolean showContentVersions=true,
@@ -819,6 +841,22 @@ component 	persistent="true"
 				"lastName" 		= getCreator().getLastName(),
 				"email" 		= getCreator().getEmail(),
 				"username" 		= getCreator().getUsername()
+			};
+		}
+
+		// Do Role Relationship
+		if( arguments.showRole && hasRole() ){
+			result[ "role" ] = {
+				"roleID" 	= getRole().getRoleID(),
+				"role" 	= getRole().getRole()
+			};
+		}
+
+		// Do Permission Relationship
+		if( arguments.showPermission && hasPermission() ){
+			result[ "permission" ] = {
+				"permissionID" 	= getPermission().getPermissionID(),
+				"permission" 	= getPermission().getPermission()
 			};
 		}
 
@@ -1062,6 +1100,8 @@ component 	persistent="true"
 	/**
 	* Wipe primary key, and descendant keys, and prepare for cloning of entire hierarchies
 	* @author The author doing the cloning
+	* @role The role doing the cloning
+	* @permission The permission doing the cloning
 	* @original The original content object that will be cloned into this content object
 	* @originalService The ContentBox content service object
 	* @publish Publish pages or leave as drafts
@@ -1070,6 +1110,8 @@ component 	persistent="true"
 	*/
 	BaseContent function prepareForClone(
 		required any author,
+		required any role,
+		required any permission,
 		required any original,
 		required any originalService,
 		required boolean publish,
@@ -1149,6 +1191,8 @@ component 	persistent="true"
 				// now deep clone until no more child is left behind.
 				newChild.prepareForClone(
 					author				= arguments.author,
+					role				= arguments.role,
+					permission				= arguments.permission,
 					original			= thisChild,
 					originalService		= originalService,
 					publish				= arguments.publish,
@@ -1216,6 +1260,26 @@ component 	persistent="true"
 	*/
 	boolean function isPasswordProtected(){
 		return len( getPasswordProtection() );
+	}
+
+	/**
+	* get roleid that can view the content
+	*/
+	numeric function getRoleRestriction(){
+		if( hasRole() ){
+			return getRole().getRoleId();
+		}
+		return 0;
+	}
+
+	/**
+	* get permissionid that can view the content
+	*/
+	numeric function getPermissionRestriction(){
+		if( hasPermission() ){
+			return getPermission().getPermissionId();
+		}
+		return 0;
 	}
 
 	/**

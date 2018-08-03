@@ -6,11 +6,13 @@ component extends="baseHandler"{
 	// Dependencies
 	property name="permissionGroupService"			inject="id:permissionGroupService@cb";
 	property name="permissionService"				inject="id:permissionService@cb";
-	
+
 	// pre handler
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Permission Groups";
 	}
-	
+
 	/**
 	* Manage groups
 	*/
@@ -22,7 +24,7 @@ component extends="baseHandler"{
 		prc.xehExport 			= "#prc.cbAdminEntryPoint#.permissionGroups.export";
 		prc.xehExportAll 		= "#prc.cbAdminEntryPoint#.permissionGroups.exportAll";
 		prc.xehImportAll		= "#prc.cbAdminEntryPoint#.permissionGroups.importAll";
-		
+
 		// Get all groups
 		prc.aGroups = permissionGroupService.list( sortOrder="name", asQuery=false );
 		// Tab
@@ -30,7 +32,7 @@ component extends="baseHandler"{
 		// view
 		event.setView( "permissionGroups/index" );
 	}
-	
+
 	/**
 	* Save groups
 	*/
@@ -48,7 +50,7 @@ component extends="baseHandler"{
 		// relocate
 		setNextEvent( prc.xehPermissionGroups );
 	}
-	
+
 	/**
 	* Remove a group
 	*/
@@ -66,7 +68,7 @@ component extends="baseHandler"{
 		// relocate
 		setNextEvent( prc.xehPermissionGroups );
 	}
-	
+
 	/**
 	* Manage group permissions
 	*/
@@ -82,7 +84,7 @@ component extends="baseHandler"{
 		// view
 		event.setView( view="permissionGroups/permissions", layout="ajax" );
 	}
-	
+
 	/**
 	* Async saving of permissions to groups
 	* @return json
@@ -90,17 +92,17 @@ component extends="baseHandler"{
 	function savePermission( event, rc, prc ){
 		var oGroup 		= permissionGroupService.get( rc.permissionGroupID );
 		var oPermission = permissionService.get( rc.permissionID );
-		
+
 		// Assign it only if it does not exist already
 		if( !oGroup.hasPermission( oPermission ) ){
 			oGroup.addPermission( oPermission );
 			permissionGroupService.save( oGroup );
 		}
-		
+
 		// Saved
 		event.renderData( data="true", type="json" );
 	}
-	
+
 	/**
 	* Async remove a permission
 	* @return json
@@ -108,15 +110,15 @@ component extends="baseHandler"{
 	function removePermission( event, rc, prc ){
 		var oGroup 		= permissionGroupService.get( rc.permissionGroupID );
 		var oPermission = permissionService.get( rc.permissionID );
-		
+
 		// Remove it
 		oGroup.removePermission( oPermission );
 		permissionGroupService.save( oGroup );
-		
+
 		// Saved
 		event.renderData( data="true", type="json" );
 	}
-	
+
 	/**
 	* Export permission group
 	*/
@@ -124,7 +126,7 @@ component extends="baseHandler"{
 		event.paramValue( "format", "json" );
 		// get group
 		prc.oGroup  = permissionGroupService.get( event.getValue( "permissionGroupID", 0 ) );
-		
+
 		// relocate if not existent
 		if( !prc.oGroup.isLoaded() ){
 			cbMessagebox.warn( "permissionGroupID sent is not valid" );
@@ -136,11 +138,11 @@ component extends="baseHandler"{
 			case "xml" : case "json" : {
 				var filename = "#prc.oGroup.getName()#." & ( rc.format eq "xml" ? "xml" : "json" );
 				event.renderData(
-					data		= prc.oGroup.getMemento(), 
-					type		= rc.format, 
-					xmlRootName	= "permissionGroup" 
+					data		= prc.oGroup.getMemento(),
+					type		= rc.format,
+					xmlRootName	= "permissionGroup"
 				)
-					.setHTTPHeader( name="Content-Disposition", value=" attachment; filename=#fileName#" ); 
+					.setHTTPHeader( name="Content-Disposition", value=" attachment; filename=#fileName#" );
 				break;
 			}
 			default : {
@@ -148,7 +150,7 @@ component extends="baseHandler"{
 			}
 		}
 	}
-	
+
 	/**
 	* Export all entries
 	*/
@@ -156,16 +158,16 @@ component extends="baseHandler"{
 		event.paramValue( "format", "json" );
 		// get all prepared content objects
 		var data  = permissionGroupService.getAllForExport();
-		
+
 		switch( rc.format ){
 			case "xml" : case "json" : {
 				var filename = "PermissionGroups." & ( rc.format eq "xml" ? "xml" : "json" );
 				event.renderData(
-					data		= data, 
-					type		= rc.format, 
-					xmlRootName	= "permissionGroups" 
+					data		= data,
+					type		= rc.format,
+					xmlRootName	= "permissionGroups"
 				)
-					.setHTTPHeader( name="Content-Disposition", value=" attachment; filename=#fileName#" ); 
+					.setHTTPHeader( name="Content-Disposition", value=" attachment; filename=#fileName#" );
 				break;
 			}
 			default : {
@@ -173,7 +175,7 @@ component extends="baseHandler"{
 			}
 		}
 	}
-	
+
 	/**
 	* Import all permission groups
 	*/

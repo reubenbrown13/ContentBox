@@ -452,7 +452,7 @@
                                         )#
                                     </div>
 
-                                    <!--- Password Protection --->
+                                    <!--- Password Protection
                                     <div class="form-group">
                                         <label for="passwordProtection"><i class="fa fa-lock fa-lg"></i> Password Protection:</label>
                                         #html.textfield(
@@ -462,7 +462,37 @@
                                             class="form-control",
                                             maxlength="100"
                                         )#
-                                    </div>
+                                    </div> --->
+                        						<!--- Roles --->
+                        						<div class="form-group">
+                                      <i class="fa fa-lock fa-lg"></i>
+                                      #html.label(
+                                          field="roleid",
+                                          content="Role:",
+                                          class="inline"
+                                      )#
+                                      <select name="roleid" id="roleid" class="form-control input-sm">
+                        								<option value="">No Restriction/Inerit</option>
+                        								<cfloop array="#prc.roles#" index="thisRole">
+                        								<option value="#thisRole.getRoleID()#"<cfif ((prc.page.getRoleRestriction() GT 0) AND thisRole.getRoleID() EQ prc.page.getRole().getRoleID())> selected="selected"</cfif>>#thisRole.getRole()#</option>
+                        								</cfloop>
+                        							</select>
+                        						</div>
+                                    <!--- permissions --->
+                        						<div class="form-group">
+                                      <i class="fa fa-lock fa-lg"></i>
+                                      #html.label(
+                                          field="permissionid",
+                                          content="Permission:",
+                                          class="inline"
+                                      )#
+                                      <select name="permissionid" id="permissionid" class="form-control input-sm">
+                        								<option value="">No Restriction/Inerit</option>
+                        								<cfloop array="#prc.permissions#" index="thisPermission">
+                        								<option value="#thisPermission.getPermissionID()#"<cfif ((prc.page.getPermissionRestriction() GT 0) AND thisPermission.getPermissionID() EQ prc.page.getPermission().getPermissionID())> selected="selected"</cfif>>#thisPermission.getPermission()#</option>
+                        								</cfloop>
+                        							</select>
+                        						</div>
                                 </div>
                             </div>
                         </div>

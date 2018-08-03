@@ -22,7 +22,7 @@ component extends="ContentService" singleton{
 
 	/**
 	* Save an entry
-	* 
+	*
 	* @return EntryService
 	*/
 	function saveEntry( required any entry, boolean transactional=true ){
@@ -170,22 +170,24 @@ component extends="ContentService" singleton{
 		var hql = "FROM cbEntry
 				  WHERE isPublished = true
 				    AND passwordProtection = ''
+				    AND roleID IS NULL
+				    AND permissionID IS NULL
 				    AND publishedDate <= :now";
 		var params = {};
 		params[ "now" ] = now();
-		
+
 		// year lookup mandatory
 		if( arguments.year NEQ 0 ){
 			params[ "year" ] = arguments.year;
 			hql &= " AND YEAR( publishedDate ) = :year";
 		}
-		
+
 		// month lookup
 		if( arguments.month NEQ 0 ){
 			params[ "month" ] = arguments.month;
 			hql &= " AND MONTH( publishedDate ) = :month";
 		}
-		
+
 		// day lookup
 		if( arguments.day NEQ 0 ){
 			params[ "day" ] = arguments.day;
@@ -271,8 +273,8 @@ component extends="ContentService" singleton{
 	* @isPublished	Show all content or true/false published content
 	* @showInSearch Show all content or true/false showInSearch flag
 	*/
-	array function getAllFlatEntries( 
-		sortOrder="title asc", 
+	array function getAllFlatEntries(
+		sortOrder="title asc",
 		boolean isPublished,
 		boolean showInSearch
 	){

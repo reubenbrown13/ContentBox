@@ -33,6 +33,7 @@ component extends="baseHandler"{
 		// exit handlers
 		prc.xehDoLogin 			= "#prc.cbAdminEntryPoint#.security.doLogin";
 		prc.xehLostPassword 	= "#prc.cbAdminEntryPoint#.security.lostPassword";
+		prc.xehRegisterUser 	= "#prc.cbAdminEntryPoint#.security.register";
 		// remember me
 		prc.rememberMe = antiSamy.htmlSanitizer( securityService.getRememberMe() );
 		// secured URL from security interceptor
@@ -298,4 +299,32 @@ component extends="baseHandler"{
 		setNextEvent( "#prc.cbAdminEntryPoint#.security.login" );
 	}
 
+	/**
+	* Registration screen
+	*/
+	function register( event, rc, prc ){
+		// exit handlers
+		prc.xehDoRegister 			= "#prc.cbAdminEntryPoint#.security.doRegister";
+		prc.xehLogin 	= "#prc.cbAdminEntryPoint#.security.login";
+		prc.xehRegisterUser 	= "#prc.cbAdminEntryPoint#.security.register";
+		// remember me
+		prc.rememberMe = antiSamy.htmlSanitizer( securityService.getRememberMe() );
+		// secured URL from security interceptor
+		arguments.event.paramValue( "_securedURL", "" );
+		rc._securedURL = antiSamy.htmlSanitizer( rc._securedURL );
+		// Markdown Processing of sign in text
+		//prc.registrationText = markdown.toHTML( prc.cbSettings.cb_security_registrater_user_text );
+		prc.registrationText = markdown.toHTML( "Register Account" );
+		// view
+		event.setView( view="security/register" );
+	}
+
+	/**
+	* Process user registrationForm
+	* TODO: still need to build this function to save the records.  For now, just
+	*     redirect to the login form.
+	*/
+	function doregister( event, rc, prc ){
+		setNextEvent( "#prc.cbAdminEntryPoint#.security.login" );
+	}
 }

@@ -28,7 +28,7 @@
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group form-inline no-margin">
-								#html.textField( 
+								#html.textField(
 									name="pageSearch",
 									class="form-control",
 									placeholder="Quick Search"
@@ -45,9 +45,9 @@
 								    	<ul class="dropdown-menu">
 								    		<cfif prc.oCurrentAuthor.checkPermission( "PAGES_ADMIN" )>
 								    			<li>
-								    				<a href="javascript:bulkRemove()" 
+								    				<a href="javascript:bulkRemove()"
 								    					class="confirmIt"
-														data-title="Delete Selected Categories?" 
+														data-title="Delete Selected Categories?"
 														data-message="This will delete the categories and associations, are you sure?">
 															<i class="fa fa-trash-o"></i> Delete Selected
 													</a>
@@ -82,7 +82,7 @@
 											</li>
 								    	</ul>
 								    </div>
-								    <button class="btn btn-primary btn-sm" 
+								    <button class="btn btn-primary btn-sm"
 										onclick="return to('#event.buildLink(linkTo=prc.xehPageEditor)#/parentID/' + getParentContentID() )">Create Page</button>
 								</cfif>
 							</div>
@@ -141,6 +141,26 @@
 								</select>
 					        </div>
 					    </div>
+						<!--- Roles --->
+						<div class="form-group">
+							<label for="fRole" class="control-label">Roles: </label>
+							<select name="fRole" id="fRole" class="form-control input-sm">
+								<option value="any">All Roles</option>
+								<cfloop array="#prc.roles#" index="thisRole">
+								<option value="#thisRole.getRoleID()#">#thisRole.getRole()#</option>
+								</cfloop>
+							</select>
+						</div>
+						<!--- Permissions --->
+						<div class="form-group">
+							<label for="fPermission" class="control-label">Permissions: </label>
+							<select name="fPermission" id="fPermission" class="form-control input-sm">
+								<option value="any">All Permissions</option>
+								<cfloop array="#prc.permissions#" index="thisPermission">
+								<option value="#thisPermission.getPermissionID()#">#thisPermission.getPermission()#</option>
+								</cfloop>
+							</select>
+						</div>
 						<!--- Status --->
 						<div class="form-group">
 					        <label for="fStatus" class="control-label">Status:</label>
@@ -193,7 +213,7 @@
 			title = "Import Pages",
 			contentArea = "page",
 			action = prc.xehPageImport,
-			contentInfo = "Choose the ContentBox <strong>JSON</strong> pages file to import. The creator of the page is matched via their <strong>username</strong> and 
+			contentInfo = "Choose the ContentBox <strong>JSON</strong> pages file to import. The creator of the page is matched via their <strong>username</strong> and
                 page overrides are matched via their <strong>slug</strong>.
                 If the importer cannot find the username from the import file in your installation, then it will ignore the record."
 		};

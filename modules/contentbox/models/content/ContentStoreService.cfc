@@ -44,6 +44,8 @@ component extends="ContentService" singleton{
 				var entriesInNeed = newCriteria().like( "slug", "#arguments.originalSlug#/%" ).list();
 				for( var thisContent in entriesInNeed ){
 					thisContent.setSlug( replaceNoCase( thisContent.getSlug(), arguments.originalSlug, arguments.content.getSlug() ) );
+					thisPage.setRole( arguments.page.getRole() );
+					thisPage.setPermission( arguments.page.getPermission() );
 					save( entity=thisContent, transactional=false );
 				}
 			}
@@ -60,6 +62,8 @@ component extends="ContentService" singleton{
 	* @parent.hint The parentID to filter on, don't pass or pass an empty value to ignore, defaults to 'all'
 	* @creator.hint The creatorID to filter on, don't pass or pass an empty value to ignore, defaults to 'all'
 	* @category.hint The categorie(s) to filter on. You can also pass 'all' or 'none'
+	* @role.hint The role to filter on. You can also pass '' for all.
+	* @permission.hint The permission to filter on. You can also pass '' for all.
 	* @max.hint The maximum records to return
 	* @offset.hint The offset on the pagination
 	* @sortOrder.hint Sorting of the results, defaults to page title asc
@@ -75,6 +79,8 @@ component extends="ContentService" singleton{
 		string creator="all",
 		string parent,
 		string category="all",
+		string role="",
+		string permission="",
 		numeric max=0,
 		numeric offset=0,
 		string sortOrder="",
@@ -110,22 +116,30 @@ component extends="ContentService" singleton{
 		if( arguments.creator NEQ "all" ){
 			c.isEq( "creator.authorID", javaCast( "int", arguments.creator ) );
 		}
+		// Role Filter
+		if( arguments.role NEQ "" ){
+			c.isEq( "role.roleID", javaCast( "int", arguments.role ) );
+		}
+		// Permission Filter
+		if( arguments.permission NEQ "" ){
+			c.isEq( "permission.permissionID", javaCast( "int", arguments.permission ) );
+		}
 		// Search Criteria
 		if( len( arguments.search ) ){
 			// Search with active content
 			if( arguments.searchActiveContent ){
 				// like disjunctions
-				c.or( 
+				c.or(
 					c.restrictions.like( "title","%#arguments.search#%" ),
 					c.restrictions.like( "slug","%#arguments.search#%" ),
 					c.restrictions.like( "description","%#arguments.search#%" ),
 					c.restrictions.like( "ac.content", "%#arguments.search#%" )
 				);
 			} else {
-				c.or( 
+				c.or(
 					c.restrictions.like( "title","%#arguments.search#%" ),
 					c.restrictions.like( "slug","%#arguments.search#%" ),
-					c.restrictions.like( "description","%#arguments.search#%" ) 
+					c.restrictions.like( "description","%#arguments.search#%" )
 				);
 			}
 		}
@@ -164,11 +178,11 @@ component extends="ContentService" singleton{
 		// run criteria query and projections count
 		results.count 	= c.count( "contentID" );
 		results.content = c.resultTransformer( c.DISTINCT_ROOT_ENTITY )
-							.list( 
+							.list(
 								offset 		= arguments.offset,
 								max 		= arguments.max,
 								sortOrder 	= arguments.sortOrder,
-								asQuery 	= false 
+								asQuery 	= false
 							);
 		return results;
 	}
@@ -201,7 +215,9 @@ component extends="ContentService" singleton{
 			.isLT( "publishedDate", Now() )
 			.$or( c.restrictions.isNull( "expireDate" ), c.restrictions.isGT( "expireDate", now() ) )
 			// only non-password pages
-			.isEq( "passwordProtection", "" );
+			.isEq( "passwordProtection", "" )
+			.isEq( "roleID", "")
+			.isEq( "permissionID", "");
 
 		// Category Filter
 		if( len( arguments.category ) ){
@@ -231,11 +247,11 @@ component extends="ContentService" singleton{
 		// run criteria query and projections count
 		results.count 	= c.count( "contentID" );
 		results.entries = c.resultTransformer( c.DISTINCT_ROOT_ENTITY )
-							.list( 
+							.list(
 								offset 		= arguments.offset,
 								max 		= arguments.max,
 								sortOrder 	= arguments.sortOrder,
-								asQuery 	= arguments.asQuery 
+								asQuery 	= arguments.asQuery
 							);
 
 		return results;

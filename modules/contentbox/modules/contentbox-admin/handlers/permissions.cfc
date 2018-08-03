@@ -5,15 +5,17 @@ component extends="baseHandler"{
 
 	// Dependencies
 	property name="permissionService"		inject="id:permissionService@cb";
-	
+
 	// pre handler
 	function preHandler(event,action,eventArguments){
+		// HTML Title
+		prc.htmlTitle = "Permissions";
 		var rc 	= event.getCollection();
 		var prc = event.getCollection(private=true);
 		// Tab control
 		prc.tabUsers = true;
 	}
-	
+
 	// index
 	function index(event,rc,prc){
 		// exit Handlers
@@ -21,7 +23,7 @@ component extends="baseHandler"{
 		prc.xehPermissionSave 	= "#prc.cbAdminEntryPoint#.permissions.save";
 		prc.xehExportAll 		= "#prc.cbAdminEntryPoint#.permissions.exportAll";
 		prc.xehImportAll		= "#prc.cbAdminEntryPoint#.permissions.importAll";
-		
+
 		// Get all permissions
 		prc.permissions = permissionService.list(sortOrder="permission",asQuery=false);
 		// Tab
@@ -47,7 +49,7 @@ component extends="baseHandler"{
 		// relocate
 		setNextEvent( prc.xehPermissions );
 	}
-	
+
 	// remove
 	function remove(event,rc,prc){
 		// announce event
@@ -64,18 +66,18 @@ component extends="baseHandler"{
 		}
 		setNextEvent( prc.xehPermissions );
 	}
-	
+
 	// Export All Permissions
 	function exportAll(event,rc,prc){
 		event.paramValue( "format", "json" );
 		// get all prepared content objects
 		var data  = permissionService.getAllForExport();
-		
+
 		switch( rc.format ){
 			case "xml" : case "json" : {
 				var filename = "Permissions." & ( rc.format eq "xml" ? "xml" : "json" );
 				event.renderData(data=data, type=rc.format, xmlRootName="permissions" )
-					.setHTTPHeader( name="Content-Disposition", value=" attachment; filename=#fileName#" ); ; 
+					.setHTTPHeader( name="Content-Disposition", value=" attachment; filename=#fileName#" ); ;
 				break;
 			}
 			default:{
@@ -83,7 +85,7 @@ component extends="baseHandler"{
 			}
 		}
 	}
-	
+
 	// import settings
 	function importAll(event,rc,prc){
 		event.paramValue( "importFile", "" );

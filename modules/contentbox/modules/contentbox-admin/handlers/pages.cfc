@@ -11,6 +11,8 @@ component extends="baseContentHandler"{
 	property name="pageService"			inject="id:pageService@cb";
 	property name="CKHelper"			inject="id:CKHelper@contentbox-ckeditor";
 	property name="HTMLHelper"			inject="HTMLHelper@coldbox";
+	property name="roleService"				inject="id:roleService@cb";
+	property name="permissionService"				inject="id:permissionService@cb";
 
 	// Public properties
 	this.preHandler_except = "pager";
@@ -19,6 +21,8 @@ component extends="baseContentHandler"{
 	 * pre handler
 	 */
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Pages";
 		super.preHandler( argumentCollection=arguments );
 		// exit Handlers
 		prc.xehPages 		= "#prc.cbAdminEntryPoint#.pages";
@@ -37,6 +41,11 @@ component extends="baseContentHandler"{
 		prc.authors    = authorService.getAll(sortOrder="lastName" );
 		// get all categories
 		prc.categories = categoryService.getAll(sortOrder="category" );
+		// get all roles
+		prc.roles = roleService.list( sortOrder="role", asQuery=false );
+		// get all permissions
+		prc.permissions = permissionService.list( sortOrder="permission", asQuery=false );
+
 
 		// exit handlers
 		prc.xehPageSearch 		= "#prc.cbAdminEntryPoint#.pages";
@@ -62,6 +71,8 @@ component extends="baseContentHandler"{
 			.paramValue( "fStatus", "any" )
 			.paramValue( "fCategories", "all" )
 			.paramValue( "fCreators", "all" )
+			.paramValue( "fRoles", "all" )
+			.paramValue( "fPermissions", "all" )
 			.paramValue( "isFiltering", false,true )
 			.paramValue( "parent", "" )
 			.paramValue( "showAll", false );
@@ -74,6 +85,8 @@ component extends="baseContentHandler"{
 			rc.fStatus neq "any" OR
 			rc.fCategories neq "all" OR
 			rc.fCreators neq "all" OR
+			rc.fRoles neq "all" OR
+			rc.fPermissions neq "all" OR
 			rc.showAll ){
 			prc.isFiltering = true;
 		}
@@ -91,6 +104,8 @@ component extends="baseContentHandler"{
 			category	= rc.fCategories,
 			author		= rc.fAuthors,
 			creator		= rc.fCreators,
+			role  		= rc.fRoles,
+			permission = rc.fPermission,
 			parent		= ( !isNull( rc.parent ) ? rc.parent : javaCast( "null", "" ) ),
 			sortOrder	= "order asc"
 		);
@@ -139,6 +154,10 @@ component extends="baseContentHandler"{
 		prc.defaultMarkup = prc.oCurrentAuthor.getPreference( "markup", editorService.getDefaultMarkup() );
 		// get all categories for display purposes
 		prc.categories = categoryService.getAll(sortOrder="category" );
+		// get all roles
+		prc.roles = roleService.list( sortOrder="role", asQuery=false );
+		// get all permissions
+		prc.permissions = permissionService.list( sortOrder="permission", asQuery=false );
 		// get new page or persisted
 		prc.page  = pageService.get( event.getValue( "contentID",0) );
 		// load comments,versions and child pages viewlets if persisted
@@ -189,6 +208,8 @@ component extends="baseContentHandler"{
 		event.paramValue( "isPublished", true );
 		event.paramValue( "slug", "" );
 		event.paramValue( "creatorID", "" );
+		event.paramValue( "roleID", "" );
+		event.paramValue( "permissionID", "" );
 		event.paramValue( "changelog", "" );
 		event.paramValue( "parentPage", "null" );
 		event.paramValue( "publishedDate", now() );
@@ -221,6 +242,20 @@ component extends="baseContentHandler"{
 			.addJoinedExpiredTime( rc.expireTime );
 		var isNew = ( NOT page.isLoaded() );
 
+		//save role that is required to access the page.
+		if (rc.roleID GT 0) {
+			page.setRole( roleService.get( rc.roleID ) );
+		} else {
+			page.setRole( '' );
+		}
+
+		//save permission that is required to access the page.
+		if (rc.permissionID GT 0) {
+			page.setPermission( permissionService.get( rc.permissionID ) );
+		} else {
+			page.setPermission( '' );
+		}
+		
 		// Validate Page And Incoming Data
 		var errors = page.validate();
 		if( !len( trim( rc.content ) ) ){

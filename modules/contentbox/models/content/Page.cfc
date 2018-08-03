@@ -5,62 +5,62 @@
 * ---
 * I am a cms page entity that totally rocks
 */
-component 	persistent="true" 
-			entityname="cbPage" 
-			table="cb_page" 
-			batchsize="25" 
-			cachename="cbPage" 
-			cacheuse="read-write" 
-			extends="BaseContent" 
-			joinColumn="contentID" 
+component 	persistent="true"
+			entityname="cbPage"
+			table="cb_page"
+			batchsize="25"
+			cachename="cbPage"
+			cacheuse="read-write"
+			extends="BaseContent"
+			joinColumn="contentID"
 			discriminatorValue="Page"{
 
 	/* *********************************************************************
-	**							PROPERTIES									
+	**							PROPERTIES
 	********************************************************************* */
 
-	property 	name="layout"			
-				notnull="false" 	
-				length="200" 
+	property 	name="layout"
+				notnull="false"
+				length="200"
 				default="";
-	
-	property 	name="mobileLayout"	
-				notnull="false" 	
-				length="200" 
+
+	property 	name="mobileLayout"
+				notnull="false"
+				length="200"
 				default="";
-	
-	property 	name="order"			
-				notnull="false" 	
-				ormtype="integer" 
+
+	property 	name="order"
+				notnull="false"
+				ormtype="integer"
 				default="0";
-	
-	property 	name="showInMenu" 		
-				notnull="true"  	
-				ormtype="boolean" 
-				default="true" 
+
+	property 	name="showInMenu"
+				notnull="true"
+				ormtype="boolean"
+				default="true"
 				index="idx_showInMenu";
-	
-	property 	name="excerpt" 		
-				notnull="false" 	
-				ormtype="text" 
-				default="" 
+
+	property 	name="excerpt"
+				notnull="false"
+				ormtype="text"
+				default=""
 				length="8000";
-	
-	property 	name="SSLOnly" 		
-				notnull="true"  	
-				ormtype="boolean" 
-				default="false" 
+
+	property 	name="SSLOnly"
+				notnull="true"
+				ormtype="boolean"
+				default="false"
 				index="idx_ssl";
-	
+
 	/* *********************************************************************
-	**							NON PERSISTED PROPERTIES									
+	**							NON PERSISTED PROPERTIES
 	********************************************************************* */
 
-	property 	name="renderedExcerpt" 
+	property 	name="renderedExcerpt"
 			 	persistent="false";
 
 	/* *********************************************************************
-	**							CONSTRAINTS									
+	**							CONSTRAINTS
 	********************************************************************* */
 
 	this.constraints[ "layout" ]		= { required = false, size = "1..200" };
@@ -68,7 +68,7 @@ component 	persistent="true"
 	this.constraints[ "order" ]			= { required = true, type="numeric" };
 
 	/* *********************************************************************
-	**							CONSTRUCTOR									
+	**							CONSTRUCTOR
 	********************************************************************* */
 
 	/**
@@ -89,15 +89,15 @@ component 	persistent="true"
 		order 			= 0;
 		showInMenu 		= true;
 		SSLOnly			= false;
-		
+
 		// INHERITANCE LAYOUT STATIC
 		LAYOUT_INHERITANCE_KEY = "-inherit-";
-		
+
 		return this;
 	}
 
 	/* *********************************************************************
-	**							PUBLIC FUNCTIONS									
+	**							PUBLIC FUNCTIONS
 	********************************************************************* */
 
 	/**
@@ -106,7 +106,7 @@ component 	persistent="true"
 	boolean function hasExcerpt(){
 		return len( getExcerpt() ) GT 0;
 	}
-	
+
 	/**
 	* Render excerpt
 	*/
@@ -128,7 +128,7 @@ component 	persistent="true"
 				}
 			}
 		}
-		
+
 		return renderedExcerpt;
 	}
 
@@ -140,16 +140,20 @@ component 	persistent="true"
 	* @showCustomFields Show comments in memento or not
 	* @showParent Show parent in memento or not
 	* @showChildren Show children in memento or not
+	* @showRole Show role in memento or not
+	* @showPermission Show permission in memento or not
 	* @showCategories Show categories in memento or not
 	* @showRelatedContent Show related Content in memento or not
 	*/
 	struct function getResponseMemento(
-		required array slugCache=[], 
+		required array slugCache=[],
 		boolean showAuthor=true,
 		boolean showComments=true,
 		boolean showCustomFields=true,
 		boolean showParent=true,
 		boolean showChildren=true,
+		boolean showRole=true,
+		boolean showPermission=true,
 		boolean showCategories=true,
 		boolean showRelatedContent=true
 	){
@@ -157,9 +161,9 @@ component 	persistent="true"
 			"showInMenu"
 		];
 		var result 	= super.getResponseMemento( argumentCollection=arguments );
-		
+
 		result[ "excerpt" ] = renderExcerpt();
-		
+
 		return result;
 	};
 
@@ -168,6 +172,8 @@ component 	persistent="true"
 	* @slugCache Cache of slugs to prevent infinite recursions
 	* @counter
 	* @showAuthor Show author in memento or not
+	* @showRole Show role in memento or not
+	* @showPermission Show permission in memento or not
 	* @showComments Show comments in memento or not
 	* @showCustomFields Show comments in memento or not
 	* @showContentVersions Show content versions in memento or not
@@ -177,10 +183,12 @@ component 	persistent="true"
 	* @showRelatedContent Show related Content in memento or not
 	* @showStats Show stats in memento or not
 	*/
-	function getMemento( 
-		required array slugCache=[], 
+	function getMemento(
+		required array slugCache=[],
 		counter=0,
 		boolean showAuthor=true,
+		boolean showRole=true,
+		boolean showPermission=true,
 		boolean showComments=true,
 		boolean showCustomFields=true,
 		boolean showContentVersions=true,
@@ -199,10 +207,10 @@ component 	persistent="true"
 			"SSLOnly"
 		];
 		var result 	= super.getMemento( argumentCollection=arguments );
-		
+
 		return result;
 	}
-	
+
 	/**
 	* Get the layout or if empty the default convention of "pages"
 	*/
@@ -210,7 +218,7 @@ component 	persistent="true"
 		if( len( getLayout() ) ){ return getLayout(); }
 		return "pages";
 	}
-	
+
 	/**
 	* Get layout with layout inheritance, if none found return normal saved layout
 	*/
@@ -223,7 +231,7 @@ component 	persistent="true"
 		// Else return the layout
 		return thisLayout;
 	}
-	
+
 	/**
 	* Get mobile layout with layout inheritance, if none found return normal saved layout
 	*/
@@ -240,6 +248,8 @@ component 	persistent="true"
 	/**
 	* Wipe primary key, and descendant keys, and prepare for cloning of entire hierarchies
 	* @author The author doing the cloning
+	* @role The role doing the cloning
+	* @permission The permission doing the cloning
 	* @original The original content object that will be cloned into this content object
 	* @originalService The ContentBox content service object
 	* @publish Publish pages or leave as drafts
@@ -247,9 +257,11 @@ component 	persistent="true"
 	* @newSlugRoot The new slug root that will be replaced in all cloned content
 	*/
 	BaseContent function prepareForClone(
-		required any author, 
-		required any original, 
-		required any originalService, 
+		required any author,
+		required any role,
+		required any permission,
+		required any original,
+		required any originalService,
 		required boolean publish,
 		required any originalSlugRoot,
 		required any newSlugRoot

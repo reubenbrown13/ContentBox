@@ -17,6 +17,8 @@ component extends="baseHandler"{
 
 	// pre handler
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Module Manager";
 		// Tab control
 		prc.tabModules = true;
 	}

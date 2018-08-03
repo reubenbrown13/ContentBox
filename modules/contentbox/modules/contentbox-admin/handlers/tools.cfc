@@ -9,16 +9,18 @@ component extends="baseHandler"{
 
 	// DI
 	property name="moduleService"       inject="id:moduleService@cb";
-    property name="themeService"       	inject="id:themeService@cb";
-    property name="widgetService"       inject="id:widgetService@cb";
-    property name="roleService"         inject="id:roleService@cb";
-    property name="templateService"     inject="id:emailtemplateService@cb";
+  property name="themeService"       	inject="id:themeService@cb";
+  property name="widgetService"       inject="id:widgetService@cb";
+  property name="roleService"         inject="id:roleService@cb";
+  property name="templateService"     inject="id:emailtemplateService@cb";
 	property name="contentUtil"        inject="id:contentUtil@cb";
 	property name="HTMLHelper"			inject="HTMLHelper@coldbox";
 	property name="staticExporter"		inject="staticExporter@cb";
 
 	// pre handler
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Site Tools";
 		// Tab control
 		prc.tabTools = true;
 	}

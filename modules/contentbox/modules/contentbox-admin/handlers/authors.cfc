@@ -22,6 +22,8 @@ component extends="baseHandler"{
 	* Pre handler
 	*/
 	function preHandler( event, rc, prc, action, eventArguments ){
+		// HTML Title
+		prc.htmlTitle = "Author Manager";
 		var protectedActions = [
 			"save",
 			"editor",

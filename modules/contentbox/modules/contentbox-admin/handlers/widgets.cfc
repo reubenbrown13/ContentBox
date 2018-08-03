@@ -12,6 +12,8 @@ component extends="baseHandler"{
 
 	// pre handler
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Widgets";
 		// Tab control
 		prc.tabLookAndFeel = true;
 		prc.tabLookAndFeel_widgets = true;

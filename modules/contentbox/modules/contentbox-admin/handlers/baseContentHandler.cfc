@@ -13,9 +13,13 @@ component extends="baseHandler"{
 	property name="CBHelper"			inject="id:CBHelper@cb";
 	property name="categoryService"		inject="id:categoryService@cb";
 	property name="editorService"		inject="id:editorService@cb";
+	property name="roleService"				inject="roleService@cb";
+	property name="permissionService"				inject="permissionService@cb";
 
 	// pre handler
 	function preHandler( event, action, eventArguments, rc, prc ){
+		// HTML Title
+		prc.htmlTitle = "Base Content";
 	}
 
 	/**
