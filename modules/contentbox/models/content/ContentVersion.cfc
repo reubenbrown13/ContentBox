@@ -66,6 +66,20 @@ component	persistent="true"
 				lazy="true"
 				fetch="join";
 
+	// M20 -> role loaded as a proxy and fetched immediately
+	property 	name="role"
+				fieldtype="many-to-one"
+				cfc="contentbox.models.security.Role"
+				fkcolumn="FK_roleID"
+				lazy="true";
+
+	// M20 -> permission loaded as a proxy and fetched immediately
+	property 	name="permission"
+				fieldtype="many-to-one"
+				cfc="contentbox.models.security.Permission"
+				fkcolumn="FK_permissionID"
+				lazy="true";
+
 	// M20 -> relatedContent
 	property 	name="relatedContent"
 				notnull="true"

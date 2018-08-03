@@ -215,7 +215,8 @@ component accessors="true"{
 			"EDITORS_LINKED_CONTENT" 		= "Ability to view the linked content panel",
 			"MENUS_ADMIN" 					= "Ability to manage the menu builder",
 			"EDITORS_FEATURED_IMAGE"		= "Ability to view the featured image panel",
-			"EMAIL_TEMPLATE_ADMIN"			= "Ability to admin and preview email templates"
+			"EMAIL_TEMPLATE_ADMIN"			= "Ability to admin and preview email templates",
+			"_EXTERNAL_ACCESS"			= "Allow registered users to access restricted content"
 		};
 
 		var allperms = [];
@@ -263,6 +264,7 @@ component accessors="true"{
 		oRole.addPermission( permissions[ "MENUS_ADMIN"] );
 		oRole.addPermission( permissions[ "EDITORS_FEATURED_IMAGE"] );
 		oRole.addPermission( permissions[ "EMAIL_TEMPLATE_ADMIN"] );
+		oRole.addPermission( permissions[ "EXTERNAL_USER"] );
 		roleService.save( entity=oRole, transactional=false );
 
 		// Create Admin
@@ -367,6 +369,50 @@ component accessors="true"{
 		// Add new version
 		page.addNewContentVersion(
 			content 	= "<p>Hey welcome to my about page for ContentBox, isn't this great!</p><p>{{{ContentStore slug='contentbox'}}}</p>",
+			changelog	= "First creation",
+			author 		= author
+		);
+		pageService.savePage( page );
+
+		// create a page
+		var page = pageService.new(
+			properties={
+			title 				= "Login",
+			slug  				= "login",
+			publishedDate 		= now(),
+			isPublished 		= true,
+			allowComments 		= false,
+			passwordProtection	='',
+			HTMLKeywords 		= "login",
+			HTMLDescription 	= "External User login page",
+			layout 				= "pages"
+		} );
+		page.setCreator( author );
+		// Add new version
+		page.addNewContentVersion(
+			content 	= "<p>You will need to add the login widget here once you are ready to allow external access </p>",
+			changelog	= "First creation",
+			author 		= author
+		);
+		pageService.savePage( page );
+
+		// create a page
+		var page = pageService.new(
+			properties={
+			title 				= "Register User",
+			slug  				= "register",
+			publishedDate 		= now(),
+			isPublished 		= true,
+			allowComments 		= false,
+			passwordProtection	='',
+			HTMLKeywords 		= "user registration",
+			HTMLDescription 	= "External User registration page",
+			layout 				= "pages"
+		} );
+		page.setCreator( author );
+		// Add new version
+		page.addNewContentVersion(
+			content 	= "<p>You will need to add the user registration widget here once you are ready to allow external access </p>",
 			changelog	= "First creation",
 			author 		= author
 		);

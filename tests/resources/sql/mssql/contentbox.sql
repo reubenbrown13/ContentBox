@@ -112,6 +112,9 @@ GO
 INSERT INTO [dbo].[cb_authorPermissionGroups]  VALUES (N'5', N'2')
 GO
 
+INSERT INTO [dbo].[cb_authorPermissionGroups]  VALUES (N'5', N'3')
+GO
+
 COMMIT
 GO
 
@@ -155,6 +158,9 @@ INSERT INTO [dbo].[cb_authorPermissions]  VALUES (N'3', N'40')
 GO
 
 INSERT INTO [dbo].[cb_authorPermissions]  VALUES (N'3', N'44')
+GO
+
+INSERT INTO [dbo].[cb_authorPermissions]  VALUES (N'3', N'47')
 GO
 
 COMMIT
@@ -338,6 +344,8 @@ CREATE TABLE [dbo].[cb_content] (
   [featuredImage] varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
   [featuredImageURL] varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
   [FK_authorID] int NOT NULL,
+  [FK_roleID] int NOT NULL,
+  [FK_permissionID] int NOT NULL,
   [FK_parentID] int NULL
 )
 GO
@@ -626,6 +634,8 @@ CREATE TABLE [dbo].[cb_contentVersion] (
   [version] int NOT NULL,
   [isActive] tinyint NOT NULL,
   [FK_authorID] int NOT NULL,
+  [FK_roleID] int NOT NULL,
+  [FK_permissionID] int NOT NULL,
   [FK_contentID] int NOT NULL
 )
 GO
@@ -1606,6 +1616,9 @@ GO
 INSERT INTO [dbo].[cb_permission] ([permissionID], [createdDate], [modifiedDate], [isDeleted], [permission], [description]) VALUES (N'46', N'2017-06-20 16:13:01.000', N'2017-06-20 16:13:01.000', N'0', N'EMAIL_TEMPLATE_ADMIN', N'Ability to admin and preview email templates')
 GO
 
+INSERT INTO [dbo].[cb_permission] ([permissionID], [createdDate], [modifiedDate], [isDeleted], [permission], [description]) VALUES (N'47', N'2018-08-02 00:0:00.000', N'2018-08-02 00:0:00.000', N'0', N'_EXTERNAL_ACCESS', N'Allow a logged in user to access the linked content')
+GO
+
 SET IDENTITY_INSERT [dbo].[cb_permission] OFF
 GO
 
@@ -1647,6 +1660,9 @@ INSERT INTO [dbo].[cb_permissionGroup] ([permissionGroupID], [createdDate], [mod
 GO
 
 INSERT INTO [dbo].[cb_permissionGroup] ([permissionGroupID], [createdDate], [modifiedDate], [isDeleted], [name], [description]) VALUES (N'2', N'2017-06-16 13:02:12.000', N'2017-06-16 13:02:12.000', N'0', N'Security', N'')
+GO
+
+INSERT INTO [dbo].[cb_permissionGroup] ([permissionGroupID], [createdDate], [modifiedDate], [isDeleted], [name], [description]) VALUES (N'3', N'2018-08-02 00:00:00.000', N'2018-08-02 00:00:00.000', N'0', N'ExternalUser', N'External User Permissions')
 GO
 
 SET IDENTITY_INSERT [dbo].[cb_permissionGroup] OFF
@@ -1710,6 +1726,9 @@ INSERT INTO [dbo].[cb_role] ([roleID], [createdDate], [modifiedDate], [isDeleted
 GO
 
 INSERT INTO [dbo].[cb_role] ([roleID], [createdDate], [modifiedDate], [isDeleted], [role], [description]) VALUES (N'3', N'2016-05-03 16:23:26.000', N'2016-05-03 16:23:26.000', N'0', N'MegaAdmin', N'A ContentBox Mega Admin')
+GO
+
+INSERT INTO [dbo].[cb_role] ([roleID], [createdDate], [modifiedDate], [isDeleted], [role], [description]) VALUES (N'4', N'2018-08-08 00:00:00.000', N'2018-08-08 00:00:00.000', N'0', N'ExternalUser', N'External User')
 GO
 
 INSERT INTO [dbo].[cb_role] ([roleID], [createdDate], [modifiedDate], [isDeleted], [role], [description]) VALUES (N'5', N'2016-09-23 14:35:41.000', N'2016-09-23 14:35:41.000', N'0', N'Test', N'Test')
@@ -1836,6 +1855,9 @@ INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'3', N'27')
 GO
 
 INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'3', N'3')
+GO
+
+INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'3', N'47')
 GO
 
 INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'2', N'14')
@@ -1967,6 +1989,9 @@ GO
 INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'2', N'46')
 GO
 
+INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'2', N'47')
+GO
+
 INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'1', N'18')
 GO
 
@@ -2031,6 +2056,12 @@ INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'1', N'23')
 GO
 
 INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'1', N'27')
+GO
+
+INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'1', N'47')
+GO
+
+INSERT INTO [dbo].[cb_rolePermissions]  VALUES (N'4', N'47')
 GO
 
 COMMIT
@@ -3798,6 +3829,12 @@ GO
 ALTER TABLE [dbo].[cb_content] ADD CONSTRAINT [FKFFE01899AA6AC0EA] FOREIGN KEY ([FK_authorID]) REFERENCES [cb_author] ([authorID]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
+ALTER TABLE [dbo].[cb_content] ADD CONSTRAINT [FK_3d7y6popeoks1hp6ob5c9xxhy] FOREIGN KEY ([FK_roleID]) REFERENCES [cb_role] ([roleID]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[cb_content] ADD CONSTRAINT [FK_6qbcvo5jglyc9jpw07rjbu4k0] FOREIGN KEY ([FK_permissionID]) REFERENCES [cb_permission] ([permissionID]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
 ALTER TABLE [dbo].[cb_content] ADD CONSTRAINT [FKFFE018996FDC2C99] FOREIGN KEY ([FK_parentID]) REFERENCES [cb_content] ([contentID]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
@@ -3823,6 +3860,14 @@ GO
 -- Foreign Keys structure for table cb_contentVersion
 -- ----------------------------
 ALTER TABLE [dbo].[cb_contentVersion] ADD CONSTRAINT [FKE166DFFAA6AC0EA] FOREIGN KEY ([FK_authorID]) REFERENCES [cb_author] ([authorID]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[cb_contentVersion]  WITH CHECK ADD  CONSTRAINT [FK_amrt17wy7dg2qt7toytehlj2q] FOREIGN KEY([FK_roleID])
+REFERENCES [dbo].[cb_role] ([roleID])
+GO
+
+ALTER TABLE [dbo].[cb_contentVersion]  WITH CHECK ADD  CONSTRAINT [FK_dlslbdf8cf9c77sn9o8iv5pyn] FOREIGN KEY([FK_permissionID])
+REFERENCES [dbo].[cb_permission] ([permissionID])
 GO
 
 ALTER TABLE [dbo].[cb_contentVersion] ADD CONSTRAINT [FKE166DFF91F58374] FOREIGN KEY ([FK_contentID]) REFERENCES [cb_content] ([contentID]) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -3902,4 +3947,3 @@ GO
 -- ----------------------------
 ALTER TABLE [dbo].[cb_subscriptions] ADD CONSTRAINT [FKE92A1716F2A66EE4] FOREIGN KEY ([FK_subscriberID]) REFERENCES [cb_subscribers] ([subscriberID]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
-
