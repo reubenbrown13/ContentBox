@@ -216,7 +216,7 @@ component accessors="true"{
 			"MENUS_ADMIN" 					= "Ability to manage the menu builder",
 			"EDITORS_FEATURED_IMAGE"		= "Ability to view the featured image panel",
 			"EMAIL_TEMPLATE_ADMIN"			= "Ability to admin and preview email templates",
-			"_EXTERNAL_ACCESS"			= "Allow registered users to access restricted content"
+			"_RESTRICTED_CONTENT"			= "Allow registered users to access restricted content"
 		};
 
 		var allperms = [];
@@ -264,7 +264,7 @@ component accessors="true"{
 		oRole.addPermission( permissions[ "MENUS_ADMIN"] );
 		oRole.addPermission( permissions[ "EDITORS_FEATURED_IMAGE"] );
 		oRole.addPermission( permissions[ "EMAIL_TEMPLATE_ADMIN"] );
-		oRole.addPermission( permissions[ "EXTERNAL_USER"] );
+		oRole.addPermission( permissions[ "_RESTRICTED_CONTENT"] );
 		roleService.save( entity=oRole, transactional=false );
 
 		// Create Admin
